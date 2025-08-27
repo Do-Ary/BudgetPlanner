@@ -92,7 +92,7 @@
     }
     .contain-budget p {
         font-size:2.4rem ;
-        text-align: center;
+        text-align: left;
         color: var(--gray-dark);
     }
 

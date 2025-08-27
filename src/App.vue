@@ -1,14 +1,42 @@
 <script setup>
-  import {ref} from 'vue'
+  import {reactive, ref} from 'vue'
   import Budget from './components/Budget.vue';
   import BudgetControl from './components/BudgetControl.vue';
+  import Modal from './components/Modal.vue';
+  //icono de nuevo gasto
+  import newExpenseIcon from './assets/img/nuevo-gasto.svg'
+
   
+  //para adicionar gasto
+  const modal = reactive({
+    show : false ,
+    encourage: false 
+  })
+  
+  //estate de presupuesto y disponible
   const budget = ref(0)
   const available = ref(0)
-  
+ // para definir el valor del presupuesto
+
   const defineBudget = (amount) => {
     budget.value= amount
     available.value= amount
+  }
+
+  //para mostrar la ventana modal de adicionar gasto
+  const showModal = ()=>{
+    modal.show = true; 
+    setTimeout(()=>{
+      modal.encourage = true;
+    },300)
+     
+
+  }
+  const closeModal = ()=>{
+    modal.encourage = false; 
+    setTimeout(()=>{
+      modal.show = false; 
+    },300)
   }
 </script>
 
@@ -31,6 +59,23 @@
       </div>
       
     </header>
+
+    <main v-if="budget>0">
+      <div class="create-expense">
+        <img
+          :src="newExpenseIcon"
+          alt="new expense icon"
+          @click="showModal"
+        />
+      </div>
+      <Modal 
+        v-if="modal.show"
+        @close-modal="closeModal"
+        :modal="modal"
+      />
+
+    </main>
+
   </div>
 </template>
 
@@ -88,4 +133,14 @@
     border-radius: 1.2rem;
     padding: 5rem;
   }
+  .create-expense {
+    position: fixed;
+    bottom: 5rem;
+    right: 5rem;
+  }
+  .create-expense img {
+    width: 5rem;
+    cursor: pointer; 
+  }
+  
 </style>
