@@ -3,6 +3,7 @@
   import Budget from './components/Budget.vue';
   import BudgetControl from './components/BudgetControl.vue';
   import Modal from './components/Modal.vue';
+  import Expense from './components/Expense.vue'
   import {generateId} from './helpers'
   //icono de nuevo gasto
   import newExpenseIcon from './assets/img/nuevo-gasto.svg'
@@ -90,6 +91,14 @@
     </header>
 
     <main v-if="budget>0">
+      <div class="list-expenses container">
+        <h2>{{expenses.length >0 ? 'Expenses':'There are no expenses'  }}</h2>
+        <Expense
+          v-for="expense in expenses"
+          :key="expense.id"
+          :expense="expense"
+        />
+      </div>
       <div class="create-expense">
         <img
           :src="newExpenseIcon"
@@ -176,5 +185,12 @@
     width: 5rem;
     cursor: pointer; 
   }
-  
+  .list-expenses {
+    margin-top: 10rem;
+
+  }
+  .list-expenses h2 {
+    font-weight: 900;
+    color: var(--gray-dark);
+  }
 </style>
