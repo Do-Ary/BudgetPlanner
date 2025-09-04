@@ -16,8 +16,19 @@
   //estate de presupuesto y disponible
   const budget = ref(0)
   const available = ref(0)
- // para definir el valor del presupuesto
 
+  // para definir gasto
+  const expense = reactive ({
+    name:'',
+    amount:'',
+    category:'',
+    id: null,
+    date: Date.now()
+    
+  })
+  const expenses = ref([])
+
+ // para definir el valor del presupuesto
   const defineBudget = (amount) => {
     budget.value= amount
     available.value= amount
@@ -38,6 +49,14 @@
       modal.show = false; 
     },300)
   }
+  const saveExpense =()=>{
+    expenses.value.push({
+      ...expense,
+      id:123,
+  })
+  }
+
+  
 </script>
 
 <template>
@@ -71,7 +90,12 @@
       <Modal 
         v-if="modal.show"
         @close-modal="closeModal"
+        @save-expense='saveExpense'
         :modal="modal"
+        v-model:name="expense.name"
+        v-model:amount="expense.amount"
+        v-model:category="expense.category"
+
       />
 
     </main>
