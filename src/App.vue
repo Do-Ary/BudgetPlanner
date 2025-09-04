@@ -3,6 +3,7 @@
   import Budget from './components/Budget.vue';
   import BudgetControl from './components/BudgetControl.vue';
   import Modal from './components/Modal.vue';
+  import {generateId} from './helpers'
   //icono de nuevo gasto
   import newExpenseIcon from './assets/img/nuevo-gasto.svg'
 
@@ -23,7 +24,7 @@
     amount:'',
     category:'',
     id: null,
-    date: Date.now()
+    createdAt: Date.now()
     
   })
   const expenses = ref([])
@@ -52,7 +53,16 @@
   const saveExpense =()=>{
     expenses.value.push({
       ...expense,
-      id:123,
+      id: generateId(),
+  })
+  closeModal()
+  //reiniciar objeto
+  Object.assign(expense,{
+    name:'',
+    amount:'',
+    category:'',
+    id: null,
+    createdAt: Date.now()
   })
   }
 
