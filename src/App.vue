@@ -1,5 +1,5 @@
 <script setup>
-  import {reactive, ref} from 'vue'
+  import {reactive, ref, watch} from 'vue'
   import Budget from './components/Budget.vue';
   import BudgetControl from './components/BudgetControl.vue';
   import Modal from './components/Modal.vue';
@@ -18,6 +18,7 @@
   //estate de presupuesto y disponible
   const budget = ref(0)
   const available = ref(0)
+  const spent = ref(0)
 
   // para definir gasto
   const expense = reactive ({
@@ -29,6 +30,25 @@
     
   })
   const expenses = ref([])
+ //para actualizar los valores de disponible y gastado 
+  watch(expenses, ()=>{
+    const totalSpent = expenses.value.reduce((total,expense) => expense.amount + total, 0)
+    spent.value=totalSpent
+    const totalAvailable = budget.value - totalSpent
+    available.value = totalAvailable
+    
+  },{ 
+    deep:true
+  })
+
+  watch(modal, ()=>{
+    if(!modal.show){
+      //reiniciar objeto
+      renewStateExpense();
+    }
+  },{
+    deep:true
+  })
 
  // para definir el valor del presupuesto
   const defineBudget = (amount) => {
@@ -52,26 +72,45 @@
     },300)
   }
   const saveExpense =()=>{
-    expenses.value.push({
-      ...expense,
-      id: generateId(),
-  })
+    if(expense.id){
+      //editando
+      const {id} = expense
+      const i = expenses.value.findIndex((expense =>expense.id === id))
+      expenses.value[i] = {...expense}
+    }else{
+      expenses.value.push({
+        ...expense,
+        id: generateId(),
+      })
+    }
+    
   closeModal()
-  //reiniciar objeto
-  Object.assign(expense,{
-    name:'',
-    amount:'',
-    category:'',
-    id: null,
-    createdAt: Date.now()
-  })
+  renewStateExpense()
   }
 
+  const renewStateExpense = ()=>{
+    //reiniciar objeto
+    Object.assign(expense,{
+      name:'',
+      amount:'',
+      category:'',
+      id: null,
+      createdAt: Date.now()
+    })
+  }
+
+  const selectExpense = id => {
+    const expenseEdit = expenses.value.filter(expense => expense.id === id)[0]
+    Object.assign(expense,expenseEdit);
+    showModal()
+  } 
   
 </script>
 
 <template>
-  <div>
+  <div 
+    :class="{'modal-open' : modal.show}"
+  >
     <header>
       <h1>Budget Planner</h1>
       <div class="container-header container shade">
@@ -84,6 +123,7 @@
           v-else
           :budget="budget"
           :available="available"
+          :spent="spent"
         />
         
       </div>
@@ -97,6 +137,7 @@
           v-for="expense in expenses"
           :key="expense.id"
           :expense="expense"
+          @select-expense="selectExpense"
         />
       </div>
       <div class="create-expense">
@@ -111,6 +152,8 @@
         @close-modal="closeModal"
         @save-expense='saveExpense'
         :modal="modal"
+        :available="available"
+        :id="expense.id"
         v-model:name="expense.name"
         v-model:amount="expense.amount"
         v-model:category="expense.category"
@@ -150,6 +193,10 @@
   }
   h2 {
     font-size: 3rem;
+  }
+  .modal-open{
+    overflow: hidden;
+    height: 100vh;
   }
   header {
     background-color: var(--blue);

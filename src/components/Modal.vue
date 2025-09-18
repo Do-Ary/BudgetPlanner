@@ -1,5 +1,5 @@
 <script setup>
-    import {ref} from 'vue'
+    import {computed, ref} from 'vue'
     import closeModal from '../assets/img/cerrar.svg'
     import Alert from './Alert.vue'
 
@@ -22,11 +22,21 @@
         category: {
             type: String,
             required: true
+        },
+        available:{
+            type: Number,
+            required: true
+        },
+        id:{
+            type: [String,null],
+            required: true
         }
     })
+
+    
     const addExpense = () =>{
         //Validar que no haya campos vacios
-        const {name, amount, category} = props
+        const {name, amount, category,available, id} = props
         if([name,amount,category].includes('')){
             error.value= 'All fields are required'
             
@@ -43,8 +53,34 @@
             },3000);
             return
         }
+
+        const old = props.amount
+        //validar que el usuario no gaste mas de lo disponible
+        if(id){
+            //tomar encuenta el gasto ya realizado
+            if(amount > old + available){
+                error.value='Budget exceeded '
+                setTimeout(()=>{
+                    error.value=''
+                },3000);
+                return
+            }
+        }else {
+            if(amount > available){
+            error.value='Budget exceeded '
+            setTimeout(()=>{
+                error.value=''
+            },3000);
+            return
+        }
+        }
+        
+        
         emit('save-expense')
     }
+    const isEditing = computed(()=>{
+        return props.id
+    })
 </script>
 
 <template>
@@ -66,7 +102,7 @@
                 @submit.prevent="addExpense"
             >
                 <legend>
-                    Add expense
+                    {{ isEditing ? 'Save changes' : 'Add expense' }}
                 </legend>
                 <Alert v-if="error">{{ error }}</Alert>
                 <!-- add name expense-->
@@ -114,11 +150,11 @@
                 </div>
                 <input
                     type="submit"
-                    value="Add expense"
+                    :value="[isEditing ? 'Save changes' : 'Add expense']" 
                 >
                 </input>
             </form>
-
+            
         </div>
     </div>    
 </template>
@@ -192,4 +228,5 @@
         cursor: pointer;
         
     }
+
 </style>

@@ -2,14 +2,16 @@
     import image from '../assets/img/grafico.jpg'
     import {formattedAmount} from '../helpers' 
 
-
-
     const props = defineProps({
         budget: {
             type: Number,
             required: true
         },
         available: {
+            type: Number,
+            required: true
+        },
+        spent:{
             type: Number,
             required: true
         }
@@ -46,7 +48,7 @@
                 <span>
                     Spent:
                 </span>
-                $0
+                {{formattedAmount(spent)  }}
             </p>
         </div>
     </div>
