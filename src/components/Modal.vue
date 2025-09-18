@@ -5,7 +5,8 @@
 
     const error = ref('')
 
-    const emit = defineEmits(['close-modal','save-expense','update:name','update:amount','update:category'])
+    const emit = defineEmits(['close-modal','save-expense','update:name',
+                                'update:amount','update:category','delete-expense'])
     const props = defineProps ({
         modal:{
             type: Object,
@@ -154,7 +155,14 @@
                 >
                 </input>
             </form>
-            
+            <button
+                type="button"
+                class="btn-delete"
+                v-if="isEditing"
+                @click="$emit('delete-expense')"
+                >
+                Delete expense
+            </button>
         </div>
     </div>    
 </template>
@@ -228,5 +236,15 @@
         cursor: pointer;
         
     }
-
+    .btn-delete{
+        border: none;
+        padding: 1rem ;
+        width: 100%;
+        background-color:#ef4444 ;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--white);
+        margin-top: 10rem;
+        cursor: pointer;
+    }
 </style>

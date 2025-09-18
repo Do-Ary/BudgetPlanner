@@ -5,19 +5,19 @@
     import IconHome from '../assets/img/icono_casa.svg'
     import IconFood from '../assets/img/icono_comida.svg'
     import IconExpenses from '../assets/img/icono_gastos.svg'
-    import IconEntertaiment from '../assets/img/icono_ocio.svg'
+    import IconEntertainment from '../assets/img/icono_ocio.svg' 
     import IconHealth from '../assets/img/icono_salud.svg'
-    import IconSuscriptions from '../assets/img/icono_suscripciones.svg'
+    import IconSubscriptions from '../assets/img/icono_suscripciones.svg'
     
-    //dicionaron de objetos
+    //dicionario de objetos
     const iconsMap = {
         savings : IconSavings,
         food : IconFood,
         home : IconHome,
         expenses : IconExpenses,
-        entertaiment : IconEntertaiment,
+        entertainment : IconEntertainment,
         health : IconHealth,
-        suscriptions : IconSuscriptions
+        subscriptions : IconSubscriptions
     }
     
     const props = defineProps({
