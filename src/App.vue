@@ -1,12 +1,14 @@
 <script setup>
-  import {reactive, ref, watch} from 'vue'
+  import {reactive, ref, watch,computed} from 'vue'
   import Budget from './components/Budget.vue';
   import BudgetControl from './components/BudgetControl.vue';
   import Modal from './components/Modal.vue';
+  import Selectors from './components/Selectors.vue';
   import Expense from './components/Expense.vue'
   import {generateId} from './helpers'
   //icono de nuevo gasto
   import newExpenseIcon from './assets/img/nuevo-gasto.svg'
+
 
   
   //para adicionar gasto
@@ -19,6 +21,7 @@
   const budget = ref(0)
   const available = ref(0)
   const spent = ref(0)
+  const selector = ref('')
 
   // para definir gasto
   const expense = reactive ({
@@ -111,6 +114,13 @@
     closeModal()
     }
   } 
+
+  const selectedExpenses = computed(()=>{
+    if(selector.value){
+      return expenses.value.filter( expense => expense.category === selector.value)
+    }
+    return expenses.value
+  })
 </script>
 
 <template>
@@ -137,10 +147,14 @@
     </header>
 
     <main v-if="budget>0">
+      <Selectors
+        v-model:selector="selector"
+      />
       <div class="list-expenses container">
-        <h2>{{expenses.length >0 ? 'Expenses':'There are no expenses'  }}</h2>
+        <h2>{{selectedExpenses.length >0 ? 'Expenses':'There are no expenses'  }}</h2>
+        
         <Expense
-          v-for="expense in expenses"
+          v-for="expense in selectedExpenses"
           :key="expense.id"
           :expense="expense"
           @select-expense="selectExpense"
@@ -247,4 +261,5 @@
     font-weight: 900;
     color: var(--gray-dark);
   }
+
 </style>
