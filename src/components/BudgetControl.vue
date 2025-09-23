@@ -1,6 +1,8 @@
 <script setup>
-    import image from '../assets/img/grafico.jpg'
-    import {formattedAmount} from '../helpers' 
+    import { computed } from 'vue';
+    import CircleProgress from 'vue3-circle-progress'
+    import "vue3-circle-progress/dist/circle-progress.css"
+    import { formattedAmount } from '../helpers' 
 
     defineEmits(['reset-app'])
     const props = defineProps({
@@ -17,15 +19,24 @@
             required: true
         }
     })
+    //porcentaje para la rueda
+    const percentage = computed(()=>{
+        return parseInt (((props.budget- props.available)/props.budget)*100)
+    })
 </script>
 
 <template>
     <div class="two-columns">
         <div class="contain-graphic">
-            <img
-                :src="image"
-            >
-            </img>
+            <p class="percentage">{{ percentage }}%</p>
+            <CircleProgress
+                :percent="percentage"
+                :size="250"
+                :border-width="25"
+                :border-bg-width="25"
+                fill-color="#3b82f6"
+                empty-color="#e1e1e1"
+            />
         </div>
         <div class="contain-budget">
             <button 
@@ -58,6 +69,7 @@
 </template>
 
 <style scoped>
+
     .reset-app{
         background-color: #cc045e;
         border: none;
@@ -82,7 +94,7 @@
     .two-columns > :first-child {
         margin-bottom: 2.5rem ;
     }
-    @media( min-width:768px ){
+    @media( min-width:768px ) {
         .two-columns {
             flex-direction: row;
             gap: 4rem;
@@ -92,7 +104,22 @@
             margin-bottom: 0 ;
         }
     }
-    .contain-budget{
+    .contain-graphic {
+        position: relative;
+    }
+    .percentage {
+        position: absolute;
+        margin: auto;
+        top: calc(50% - 1.5rem);
+        left:0%;
+        right: 0%;
+        text-align: center;
+        z-index: 100;
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--gray-dark);
+    }
+    .contain-budget {
         width: 100%;
     }
     .contain-budget p {
