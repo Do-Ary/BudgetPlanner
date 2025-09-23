@@ -1,5 +1,5 @@
 <script setup>
-  import {reactive, ref, watch,computed} from 'vue'
+  import {reactive, ref, watch,computed,onMounted} from 'vue'
   import Budget from './components/Budget.vue';
   import BudgetControl from './components/BudgetControl.vue';
   import Modal from './components/Modal.vue';
@@ -33,6 +33,7 @@
     
   })
   const expenses = ref([])
+
  //para actualizar los valores de disponible y gastado 
   watch(expenses, ()=>{
     const totalSpent = expenses.value.reduce((total,expense) => expense.amount + total, 0)
@@ -40,10 +41,13 @@
     const totalAvailable = budget.value - totalSpent
     available.value = totalAvailable
     
+    //para poner en localstorage la info de los gastos
+    localStorage.setItem('expenses',JSON.stringify(expenses.value))
+
   },{ 
     deep:true
   })
-
+// reinicnar state de gasto
   watch(modal, ()=>{
     if(!modal.show){
       //reiniciar objeto
@@ -51,6 +55,25 @@
     }
   },{
     deep:true
+  })
+  // guardar presupuesto en localstorage      
+  watch(budget, ()=>{
+    localStorage.setItem('budget', budget.value)
+  })
+  // guardar en localstorage
+  onMounted(()=>{
+    const budgetStorage = localStorage.getItem('budget')
+    if(budgetStorage){
+      budget.value = Number(budgetStorage)
+      available.value = Number(budgetStorage)
+    }
+
+    //poner los gastos en caso de tenerlos
+    const expensesStorage = localStorage.getItem('expenses')
+    if(expensesStorage){
+      expenses.value=JSON.parse(expensesStorage)
+    }
+
   })
 
  // para definir el valor del presupuesto
@@ -74,6 +97,7 @@
       modal.show = false; 
     },300)
   }
+  //guardar gasto
   const saveExpense =()=>{
     if(expense.id){
       //editando
@@ -90,7 +114,7 @@
   closeModal()
   renewStateExpense()
   }
-
+  //reiniciar state de gasto
   const renewStateExpense = ()=>{
     //reiniciar objeto
     Object.assign(expense,{
@@ -101,26 +125,34 @@
       createdAt: Date.now()
     })
   }
-
+  //seleccionar gasto
   const selectExpense = id => {
     const expenseEdit = expenses.value.filter(expense => expense.id === id)[0]
     Object.assign(expense,expenseEdit);
     showModal()
   } 
-  
+  //borrar gasto
   const deleteExpense =() =>{
     if(confirm('Delete?')){
     expenses.value = expenses.value.filter(expenseState => expenseState.id !== expense.id)
     closeModal()
     }
   } 
-
+  //filtrar gastos por categoria
   const selectedExpenses = computed(()=>{
     if(selector.value){
       return expenses.value.filter( expense => expense.category === selector.value)
     }
     return expenses.value
   })
+  //resetear aplicacion
+  const resetApp = () =>{
+    if(confirm('Are you sure you want to reset the budget and expenses?')) {
+      expenses.value = []
+      budget.value= 0
+    }
+    
+  }
 </script>
 
 <template>
@@ -140,6 +172,7 @@
           :budget="budget"
           :available="available"
           :spent="spent"
+          @reset-app="resetApp"
         />
         
       </div>
